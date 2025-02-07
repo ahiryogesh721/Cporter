@@ -1,10 +1,9 @@
 import { Router } from "express";
-import { AuthController } from "../controllers/auth.controller";
+import { redieact, OAuthCallback } from "../controllers/authConttroller";
 
 const router = Router();
-const authController = new AuthController();
 
-router.get("/facebook/url", authController.getFacebookAuthUrl);
-router.get("/facebook/callback", authController.handleFacebookCallback);
+router.get("/facebook", redieact);
+router.get("/facebook/callback", OAuthCallback);
 
 export default router;

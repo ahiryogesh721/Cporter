@@ -9,12 +9,11 @@ export const config = {
     redirectUri: process.env.FACEBOOK_REDIRECT_URI,
     graphApiVersion: "v19.0",
   },
-  looker: {
-    apiKey: process.env.LOOKER_API_KEY,
-    apiEndpoint: process.env.LOOKER_API_ENDPOINT,
-  },
   jwt: {
     secret: process.env.JWT_SECRET || "your-secret-key",
     expiresIn: "24h",
+  },
+  mongo: {
+    url: process.env.MONGO_URI,
   },
 };
