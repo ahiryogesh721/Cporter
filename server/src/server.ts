@@ -1,7 +1,17 @@
-import express from 'express';
+import { PrismaClient } from '@prisma/client';
+import app from './app';
 
-const app = express()
+const prisma = new PrismaClient();
+const PORT = process.env.PORT || 3000
 
-app.listen(5000, () => {
-    console.log('Server is running on port 5000')
-})
+
+const startServers = async () => {
+    try {
+        await prisma.$connect();
+        console.log('database connected');
+        app.listen(PORT, () => { console.log(`server running on port ${PORT}`) });
+    } catch (err) {
+        console.error('Error starting servers:', err);
+    }
+}
+startServers();
