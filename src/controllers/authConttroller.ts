@@ -19,9 +19,9 @@ export const OAuthCallback = async (req: any, res: any) => {
       "https://graph.facebook.com/v19.0/oauth/access_token",
       {
         params: {
-          client_id: process.env.FACEBOOK_APP_ID,
-          client_secret: process.env.FACEBOOK_APP_SECRET,
-          redirect_uri: process.env.FACEBOOK_REDIRECT_URI,
+          client_id: config.facebook.appId,
+          client_secret: config.facebook.appSecret,
+          redirect_uri: config.facebook.redirectUri,
           code,
         },
       }
@@ -32,7 +32,7 @@ export const OAuthCallback = async (req: any, res: any) => {
     // Fetch user profile data from Facebook
     const profileResponse = await axios.get("https://graph.facebook.com/me", {
       params: {
-        fields: "id,name,email,picture",
+        fields: "id,name,email",
         access_token: accessToken,
       },
     });
@@ -41,6 +41,7 @@ export const OAuthCallback = async (req: any, res: any) => {
 
     // Check if user already exists in DB
     let user = await User.findOne({ facebookId: id });
+    console.log(user);
 
     if (!user) {
       user = new User({
