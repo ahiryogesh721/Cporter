@@ -3,14 +3,16 @@ import { config } from "../config/env";
 import { User } from "../models/User";
 import jwt from "jsonwebtoken";
 
-export const redieact = async (req: any, res: any) => {
+export async function redieact(req: any, res: any) {
   const facebookOAuthURL = `https://www.facebook.com/v19.0/dialog/oauth?client_id=${config.facebook.appId}&redirect_uri=${config.facebook.redirectUri}&scope=email,public_profile`;
-  res.redirect(facebookOAuthURL);
-};
 
-export const OAuthCallback = async (req: any, res: any) => {
+  res.redirect(facebookOAuthURL);
+}
+
+export async function OAuthCallback(req: any, res: any) {
   try {
     const { code } = req.query;
+
     if (!code)
       return res.status(400).json({ error: "Authorization code missing" });
 
@@ -27,18 +29,19 @@ export const OAuthCallback = async (req: any, res: any) => {
       }
     );
 
-    const accessToken = tokenResponse.data.access_token;
+    const access_token = tokenResponse.data.access_token;
 
     // Fetch user profile data from Facebook
     const profileResponse = await axios.get("https://graph.facebook.com/me", {
       params: {
         fields: "id,name,email",
-        access_token: accessToken,
+        access_token,
       },
     });
 
     const { id, name, email, picture } = profileResponse.data;
 
+    /* 
     // Check if user already exists in DB
     let user = await User.findOne({ facebookId: id });
     console.log(user);
@@ -51,16 +54,15 @@ export const OAuthCallback = async (req: any, res: any) => {
         profilePicture: picture?.data?.url,
       });
       await user.save();
-    }
+    } */
 
-    // Generate JWT Token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, {
+    const sessionKey = jwt.sign({ access_token }, process.env.JWT_SECRET!, {
       expiresIn: "1h",
     });
 
-    res.json({ token, user });
+    res.redirect(`${config.frontend_url}/auth/O?sessionKey=${sessionKey}`);
   } catch (error) {
-    console.error("Facebook Login Error:", error);
-    res.status(500).json({ error: "Facebook authentication failed" });
+    console.error("OAuth Error:", error);
+    res.status(500).json({ error: "OAuth failed" });
   }
-};
+}

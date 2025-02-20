@@ -10,10 +10,11 @@ export const config = {
     graphApiVersion: "v19.0",
   },
   jwt: {
-    secret: process.env.JWT_SECRET || "your-secret-key",
-    expiresIn: "24h",
+    secret: process.env.JWT_SECRET || "KEY",
+    expiresIn: "1h",
   },
   mongo: {
     url: process.env.MONGO_URI,
   },
+  frontend_url: process.env.FRONTRND_URL || "URL",
 };
